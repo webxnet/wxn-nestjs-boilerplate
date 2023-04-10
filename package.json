@@ -1,7 +1,7 @@
 {
   "name": "wxn-nestjs-boilerplate",
   "version": "0.0.1",
-  "description": "Nest is an MIT-licensed open source project. Webxnet use Nest for some of our backend service",
+  "description": "Nest is an MIT-licensed open source project. Webxnet use Nest for some of our backend service.",
   "author": "Gilson Peloso",
   "private": true,
   "license": "MIT",
