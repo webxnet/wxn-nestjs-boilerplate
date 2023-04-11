@@ -1,6 +1,8 @@
 # compiled output
 /dist
 /node_modules
+/docker/postgres/config
+/docker/postgres/data
 
 # env files
 .env
