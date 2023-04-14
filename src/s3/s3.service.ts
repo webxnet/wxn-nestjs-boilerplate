@@ -1,39 +1,48 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
-import { ConsoleLogger, Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
+import { Injectable } from '@nestjs/common'
+import * as AWS from 'aws-sdk'
 
 @Injectable()
 export class S3Service {
-    private s3: S3Client
+    private s3: AWS.S3
 
-    constructor(
-        private readonly logger: ConsoleLogger,
-        private readonly configService: ConfigService,
-    ) {
-        this.s3 = new S3Client({
-            region: this.configService.get('AWS_REGION'),
-            credentials: {
-                accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
-                secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
-            },
+    constructor() {
+        this.s3 = new AWS.S3({
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            region: process.env.AWS_REGION,
+            signatureVersion: 'v4',
         })
     }
 
     async uploadImage(buffer: Buffer, mimetype: string, key: string): Promise<string | undefined> {
-        try {
-            await this.s3.send(
-                new PutObjectCommand({
-                    Bucket: this.configService.get('AWS_BUCKET_NAME'),
-                    Key: key,
-                    Body: buffer,
-                    ContentType: mimetype,
-                    ServerSideEncryption: 'aws:kms',
-                }),
-            )
-            return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`
-        } catch (error) {
-            this.logger.error(error)
-            throw error
+        const params: AWS.S3.PutObjectRequest = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: key,
+            Body: buffer,
+            ContentType: mimetype,
+            ServerSideEncryption: 'aws:kms',
         }
+
+        await this.s3.upload(params).promise()
+
+        return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`
+    }
+
+    async getSignedUrl(key: string): Promise<string> {
+        const params: AWS.S3.GetObjectRequest = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: key,
+        }
+
+        return this.s3.getSignedUrlPromise('getObject', params)
+    }
+
+    async deleteImage(key: string): Promise<void> {
+        const params: AWS.S3.DeleteObjectRequest = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: key,
+        }
+
+        await this.s3.deleteObject(params).promise()
     }
 }
