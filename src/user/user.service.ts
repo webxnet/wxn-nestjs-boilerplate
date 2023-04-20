@@ -139,7 +139,7 @@ export class UserService {
                 await this.s3Service.deleteImage(oldKey)
             }
             const username = req.user.username
-            const key = `${username}/avatars/${Date.now()}-${originalname}`
+            const key = `${username}/avatar/${Date.now()}-${originalname}`
             avatarUrl = await this.s3Service.uploadImage(buffer, mimetype, key)
         }
 

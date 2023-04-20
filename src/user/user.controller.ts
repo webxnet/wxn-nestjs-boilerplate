@@ -14,17 +14,19 @@ import { FileInterceptor } from '@nestjs/platform-express'
 import { Request, Response } from 'express'
 import { promises as fs } from 'fs'
 import { diskStorage } from 'multer'
+import { User } from 'src/user/entities/user.entity'
 import { IsPublic } from 'src/auth/decorators/is-public.decorator'
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator'
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UserService } from './user.service'
 
-@Controller('user')
+@Controller()
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @IsPublic()
-    @Post()
+    @Post('user')
     create(@Body() createUserDto: CreateUserDto) {
         return this.userService.createUser(createUserDto)
     }
@@ -34,9 +36,14 @@ export class UserController {
         return this.userService.getUserByUsername(params.username)
     }
 
-    @Get()
+    @Get('user')
     getUsers() {
         return this.userService.getUsers()
+    }
+
+    @Get('me')
+    getMe(@CurrentUser() user: User) {
+        return user
     }
 
     @Patch(':id')

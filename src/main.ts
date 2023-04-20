@@ -16,7 +16,7 @@ async function bootstrap() {
             },
         }),
     )
-    const globalPrefix = 'api'
+    //const globalPrefix = 'kit'
     const prismaService = app.get(PrismaService)
     await prismaService.enableShutdownHooks(app)
     const config = app.get<ConfigService>(ConfigService)
@@ -24,9 +24,10 @@ async function bootstrap() {
     const nodeEnv = config.get<string>('NODE_ENV')
     const basePath = config.get<string>('BASEPATH')
 
-    app.setGlobalPrefix(globalPrefix)
+    //app.setGlobalPrefix(globalPrefix)
     await app.listen(port, () => {
-        logger.log(`🚀 Application is running on: ${basePath}:${port}/${globalPrefix}`)
+        logger.log(`🚀 Application is running on: ${basePath}:${port}/`)
+        //${globalPrefix}
         logger.log(`Running in mode: ${nodeEnv} `)
     })
 }
