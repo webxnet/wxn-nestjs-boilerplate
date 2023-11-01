@@ -1,10 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
-import { Role } from '@prisma/client'
 import { Request } from 'express'
 import { Observable } from 'rxjs'
 import { IS_ADMIN_ROUTE } from '../decorators/is-admin.decorator'
-import { UserSession } from '../types'
+import { Role, UserSession } from '../types'
 
 @Injectable()
 export class AdminGuard implements CanActivate {

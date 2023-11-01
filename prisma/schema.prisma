@@ -10,20 +10,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
 model User {
   id        String    @id @default(uuid())
-  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
   username  String    @unique
   email     String    @unique
-  avatarUrl String?
   password  String
-  roles     Role[]    @default([USER])
+  profile   Profile?
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
 
   @@map("users")
+  @@index([id, username, email])
+}
+
+enum Gender {
+  M
+  F
+}
+
+model Profile {
+  id            String    @id @default(uuid())
+  userId        String?   @unique
+  user          User?     @relation(fields: [userId], references: [id])
+  emailVerified DateTime?
+  firstName     String?
+  lastName      String?
+  avatarUrl     String?   @default("/uploads/user.png") @map("avatar_url")
+  gender        Gender?
+  address       String?
+  isSuperUser   Boolean?  @default(false) @map("is_superuser")
+  isAdmin       Boolean   @default(false) @map("is_admin")
+  isStaff       Boolean?  @default(false) @map("is_staff")
+  isActive      Boolean?  @default(true)  @map("is_active")
+  isBlock       Boolean?  @default(false) @map("is_block")
+  phone         String?
+  langTag       String?   @default("pt-BR") @map("lang_tag")
+  dateOfBirth   DateTime? @map("date_of_birth") @db.Date
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("profiles")
 }

@@ -27,6 +27,7 @@ export class PrismaService
                     level: 'warn',
                 },
             ],
+            errorFormat: 'colorless',
         })
     }
 
@@ -44,15 +45,14 @@ export class PrismaService
             this.$on('query', (event) => {
                 this.logger.log(event)
             })
+
             await this.$connect()
         } catch (error) {
             console.error('Prisma connection error', error)
         }
     }
 
-    async enableShutdownHooks(app: INestApplication) {
-        this.$on('beforeExit', async () => {
-            await app.close()
-        })
+    cleanDb() {
+        return this.$transaction([])
     }
 }

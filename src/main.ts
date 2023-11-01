@@ -2,7 +2,6 @@ import { Logger, ValidationPipe } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
-import { PrismaService } from './prisma/prisma.service'
 
 async function bootstrap() {
     const logger = new Logger('Main')
@@ -17,8 +16,10 @@ async function bootstrap() {
         }),
     )
     //const globalPrefix = 'kit'
-    const prismaService = app.get(PrismaService)
-    await prismaService.enableShutdownHooks(app)
+    app.enableShutdownHooks()
+    /* prismaService.$on('query', (event) => {
+        console.log(event)
+    }) */
     const config = app.get<ConfigService>(ConfigService)
     const port = config.get<number>('SERVER_PORT')
     const nodeEnv = config.get<string>('NODE_ENV')
