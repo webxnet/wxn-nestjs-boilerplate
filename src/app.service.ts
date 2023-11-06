@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common'
+import { I18nContext, I18nService } from 'nestjs-i18n'
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
-  }
+    constructor(private readonly i18n: I18nService) {}
+    getHello(): string {
+        return this.i18n.t('webxnet.Hello', { lang: I18nContext.current().lang })
+    }
 }

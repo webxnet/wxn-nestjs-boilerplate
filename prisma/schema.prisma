@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  username  String    @unique
+  email     String    @unique
+  password  String
+  emailVerified DateTime?
+  firstName     String?
+  lastName      String?
+  gender        Gender?
+  address       String?
+  isSuperUser   Boolean?  @default(false) @map("is_superuser")
+  isAdmin       Boolean   @default(false) @map("is_admin")
+  isStaff       Boolean?  @default(false) @map("is_staff")
+  isActive      Boolean?  @default(true)  @map("is_active")
+  isBlock       Boolean?  @default(false) @map("is_block")
+  phone         String?
+  // avatarUrl     String?   @default("/uploads/user.png") @map("avatar_url")
+  avatarUrl String?   @default("https://kitweb.s3.sa-east-1.amazonaws.com/user.png") @map("avatar_url")
+  langTag   String?   @default("pt-BR") @map("lang_tag")
+  dateOfBirth   DateTime? @map("date_of_birth") @db.Date
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("users")
+  @@index([id, username, email])
+}
+
+enum Gender {
+  M
+  F
+}
+
+

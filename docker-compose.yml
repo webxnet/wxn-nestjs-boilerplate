@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+    db:
+       container_name: postgres-db
+       build: 
+           context: .
+           dockerfile: ./docker/postgres/Dockerfile
+       image: wxn_postgres
+       restart: always
+       environment:
+           TZ: ${DB_TIMEZONE}
+           POSTGRES_USER: ${POSTGRES_USER}
+           POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+           POSTGRES_DB: ${POSTGRES_DB}
+       ports:
+          - ${DB_PORT}:5432
+       volumes:
+          - ./docker/postgres/data:/var/lib/postgresql/data
+          - ./docker/postgres/config:/etc/postgresql  
+
+volumes:
+    db:          
