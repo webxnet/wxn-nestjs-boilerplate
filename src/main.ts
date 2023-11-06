@@ -1,11 +1,13 @@
-import { Logger, ValidationPipe } from '@nestjs/common'
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
+import { NestExpressApplication } from '@nestjs/platform-express'
 import { AppModule } from './app.module'
 
 async function bootstrap() {
     const logger = new Logger('Main')
-    const app = await NestFactory.create(AppModule)
+    const app = await NestFactory.create<NestExpressApplication>(AppModule)
+    app.setViewEngine('hbs')
     app.useGlobalPipes(
         new ValidationPipe({
             whitelist: true,
@@ -20,6 +22,10 @@ async function bootstrap() {
     /* prismaService.$on('query', (event) => {
         console.log(event)
     }) */
+
+    app.enableVersioning({
+        type: VersioningType.URI,
+    })
     const config = app.get<ConfigService>(ConfigService)
     const port = config.get<number>('SERVER_PORT')
     const nodeEnv = config.get<string>('NODE_ENV')
